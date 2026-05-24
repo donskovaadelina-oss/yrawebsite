@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YRA — Youth Research Accelerator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════════ */
+:root {
+  --v:  #F3E3B2;   /* vanilla */
+  --g:  #46462A;   /* dark green */
+  --r:  #74070D;   /* blood red */
+  --b:  #310F10;   /* bean */
+  --b2: #3d1213;
+  --nav-h:  70px;
+  --sb-w:   228px;
+  --mw:     1180px;
+  --ease:   cubic-bezier(.4,0,.2,1);
+  --fd:     'Playfair Display', Georgia, serif;
+  --fb:     'DM Sans', system-ui, sans-serif;
+  --fa:     'Cormorant Garamond', serif;
+}
+
+/* ═══════════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--fb); background: var(--b); color: var(--v); min-height: 100vh; overflow-x: hidden; }
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+
+/* ═══════════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════════ */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: var(--nav-h); z-index: 300;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 44px;
+  background: rgba(49,15,16,.95);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(243,227,178,.1);
+  transition: box-shadow .3s var(--ease);
+}
+.nav.s { box-shadow: 0 4px 40px rgba(0,0,0,.45); }
+
+.logo { display: flex; align-items: center; gap: 11px; cursor: pointer; }
+.logo-w { font-family: var(--fd); font-size: 23px; font-weight: 700; color: var(--v); border-right: 2px solid var(--r); padding-right: 11px; line-height: 1; letter-spacing: -.4px; }
+.logo-s { font-size: 10px; font-weight: 400; color: rgba(243,227,178,.48); text-transform: uppercase; letter-spacing: 1.6px; line-height: 1.5; }
+
+.nav-links { display: flex; align-items: center; gap: 2px; }
+.nb {
+  font-family: var(--fb); font-size: 13.5px; font-weight: 500;
+  color: rgba(243,227,178,.68);
+  background: none; border: none; cursor: pointer;
+  padding: 8px 14px; border-radius: 6px;
+  transition: color .22s, background .22s;
+  white-space: nowrap; letter-spacing: .15px;
+}
+.nb:hover  { color: var(--v); background: rgba(243,227,178,.07); }
+.nb.active { color: var(--v); background: rgba(116,7,13,.35); }
+.nb.cta    { background: var(--r) !important; color: var(--v) !important; border-radius: 7px !important; padding: 8px 20px !important; font-weight: 600 !important; margin-left: 4px; }
+.nb.cta:hover { background: #8f0a12 !important; }
+
+/* ═══════════════════════════════════════════════
+   PAGE SYSTEM
+═══════════════════════════════════════════════ */
+.page { display: none; padding-top: var(--nav-h); min-height: 100vh; animation: fIn .4s var(--ease); }
+.page.active { display: block; }
+@keyframes fIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+/* ═══════════════════════════════════════════════
+   HOME / HERO
+═══════════════════════════════════════════════ */
+.hero { position: relative; min-height: calc(100vh - var(--nav-h)); display: flex; align-items: center; overflow: hidden; }
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 65% 55% at 72% 50%, rgba(70,70,42,.22) 0%, transparent 60%),
+    radial-gradient(ellipse 45% 45% at 14% 82%, rgba(116,7,13,.18) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 75% at 50% 0%,  rgba(49,15,16,.55) 0%, transparent 65%);
+}
+
+/* ==========================================================================
+   ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ ГЛАВНОЙ СТРАНИЦЫ (КАРТИНКА КАК ФОН)
+   ========================================================================== */
+#page-home {
+  position: relative; /* Родоначальник координат для фоновой картинки */
+  /* overflow: hidden;  <-- ЭТУ СТРОКУ ЛУЧШЕ УДАЛИТЬ ИЛИ ЗАКОММЕНТИРОВАТЬ */
+}
+
+.hero-bg-image {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;          
+  pointer-events: none;
+  display: flex;
+  justify-content: flex-end; 
+  align-items: center;       
+  overflow: hidden;     /* <-- ПЕРЕНЕСИТЕ СЮДА, чтобы картинка не ломала экран */
+}
+
+.hero-bg-image img {
+  height: 100%;        /* Картинка занимает 100% высоты секции */
+  width: auto;         /* Ширина подстраивается автоматически, сохраняя пропорции */
+  object-fit: contain; /* Картинка отображается ПОЛНОСТЬЮ (100%), не обрезается */
+  
+  /* СОВЕТ: Если ваша PNG картинка слишком яркая и текст на ней плохо видно, 
+     раскомментируйте строчку ниже (удалите слэши), чтобы сделать её полупрозрачной: */
+  /* opacity: 0.4; */ 
+}
+
+/* Контейнер с текстом */
+.hero-in {
+  position: relative;
+  z-index: 2;          /* Слой выше, чем у картинки — текст будет строго ПОВЕРХ неё */
+  max-width: var(--mw);
+  margin: 0 auto;
+  padding: 80px 48px;
+}
+
+/* Сам текстовый блок слева */
+.hero-content {
+  max-width: 650px;    /* Ограничиваем ширину текста, чтобы он аккуратно ложился слева */
+}
+
+.hero-bg::after {
+  content:''; position:absolute; inset:0; opacity:.035;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.hero-in { position:relative; z-index:2; max-width:var(--mw); margin:0 auto; padding:80px 48px; }
+
+.h-kicker { font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:3.5px; color:var(--r); margin-bottom:22px; display:flex; align-items:center; gap:10px; }
+.h-kicker::before { content:''; display:block; width:28px; height:1px; background:var(--r); }
+.h-title { font-family:var(--fd); font-size:clamp(42px,6.2vw,90px); font-weight:400; font-style:italic; line-height:1.0; letter-spacing:-1.5px; color:var(--v); max-width:700px; margin-bottom:26px; }
+.h-title span { color:rgba(243,227,178,.35); font-style:normal; }
+.h-rule { width:60px; height:2px; background:linear-gradient(to right,var(--r),transparent); margin-bottom:26px; }
+.h-lead { font-size:16.5px; line-height:1.8; color:rgba(243,227,178,.65); font-weight:300; max-width:530px; margin-bottom:44px; }
+.h-btns { display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
+
+.btn-p { background:var(--r); color:var(--v); font-family:var(--fb); font-size:14px; font-weight:600; padding:14px 34px; border-radius:8px; border:none; cursor:pointer; letter-spacing:.4px; transition:all .3s var(--ease); }
+.btn-p:hover { background:#8f0a12; transform:translateY(-2px); box-shadow:0 10px 30px rgba(116,7,13,.4); }
+.btn-g { background:none; border:none; cursor:pointer; font-family:var(--fb); font-size:14px; font-weight:500; color:rgba(243,227,178,.65); letter-spacing:.4px; display:flex; align-items:center; gap:7px; transition:color .25s; }
+.btn-g::after { content:'→'; transition:transform .3s; }
+.btn-g:hover { color:var(--v); }
+.btn-g:hover::after { transform:translateX(5px); }
+
+.h-stats { margin-top:70px; padding-top:34px; border-top:1px solid rgba(243,227,178,.09); display:flex; gap:52px; flex-wrap:wrap; }
+.stat-n { font-family:var(--fd); font-size:34px; font-weight:600; color:var(--v); letter-spacing:-1px; line-height:1; display:block; }
+.stat-l { font-size:11px; font-weight:400; color:rgba(243,227,178,.4); text-transform:uppercase; letter-spacing:1.6px; margin-top:4px; display:block; }
+
+/* ═══════════════════════════════════════════════
+   STANDARD CONTENT PAGE wrapper
+═══════════════════════════════════════════════ */
+.std { max-width:var(--mw); margin:0 auto; padding:68px 48px 110px; }
+
+/* ═══════════════════════════════════════════════
+   PAGE HEADER
+═══════════════════════════════════════════════ */
+.ph { margin-bottom:52px; padding-bottom:38px; border-bottom:1px solid rgba(243,227,178,.08); }
+.ph-k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:3.5px; color:var(--r); margin-bottom:13px; }
+.ph-t { font-family:var(--fd); font-size:clamp(28px,4vw,52px); font-weight:400; font-style:italic; line-height:1.07; letter-spacing:-1px; color:var(--v); max-width:640px; }
+.ph-s { margin-top:16px; font-size:16px; line-height:1.75; color:rgba(243,227,178,.5); font-weight:300; max-width:540px; }
+
+/* ═══════════════════════════════════════════════
+   RESEARCH HUB — sidebar layout
+═══════════════════════════════════════════════ */
+.hub { display:flex; min-height:calc(100vh - var(--nav-h)); }
+
+.sidebar {
+  width:var(--sb-w); flex-shrink:0;
+  background:rgba(243,227,178,.022);
+  border-right:1px solid rgba(243,227,178,.07);
+  padding:44px 0 40px;
+  position:sticky; top:var(--nav-h);
+  height:calc(100vh - var(--nav-h));
+  overflow-y:auto;
+}
+.sb-label { font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:2.5px; color:rgba(243,227,178,.3); padding:0 22px 14px; border-bottom:1px solid rgba(243,227,178,.06); margin-bottom:10px; }
+.sb-nav { display:flex; flex-direction:column; gap:2px; padding:0 8px; }
+.sb-btn {
+  background:none; border:none; cursor:pointer;
+  font-family:var(--fb); font-size:13px; font-weight:500;
+  color:rgba(243,227,178,.52);
+  padding:11px 14px; border-radius:7px; text-align:left;
+  letter-spacing:.2px; transition:color .22s, background .22s;
+  display:flex; align-items:center; gap:10px;
+}
+.sb-num { font-size:10px; color:rgba(243,227,178,.22); font-family:var(--fd); font-style:italic; min-width:14px; }
+.sb-btn:hover  { color:var(--v); background:rgba(243,227,178,.06); }
+.sb-btn.active { color:var(--v); background:rgba(116,7,13,.3); }
+.sb-btn.active .sb-num { color:rgba(243,227,178,.48); }
+
+.hub-main { flex:1; overflow-y:auto; padding:60px 52px 100px; max-width:900px; }
+.sp { display:none; animation:fIn .35s var(--ease); }
+.sp.active { display:block; }
+
+.funnel-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Arial, sans-serif;
+        background-color: #2b0f0a; /* Темный фон из оригинального изображения */
+        color: #d1bba7; /* Бежевый цвет основного текста */
+        margin: 20px 0;
+    }
+
+    .funnel-table th, .funnel-table td {
+        border: 1px solid #4a231a; /* Тонкие границы, гармонирующие с фоном */
+        padding: 12px 15px;
+        text-align: left;
+    }
+
+    .funnel-table th {
+        color: #e5a962; /* Золотисто-оранжевый цвет для заголовков */
+        font-weight: bold;
+        background-color: #36140e; /* Чуть более светлый оттенок для шапки */
+    }
+
+    /* Стили для красивого отображения строк при наведении (опционально) */
+    .funnel-table tr:hover {
+        background-color: #3d1a13;
+    }
+/* ═══════════════════════════════════════════════
+   PLACEHOLDER
+═══════════════════════════════════════════════ */
+.ph-page { min-height:calc(100vh - var(--nav-h)); display:flex; align-items:center; justify-content:center; flex-direction:column; gap:16px; padding:60px 40px; text-align:center; }
+.ph-page .ico { font-size:48px; opacity:.16; }
+.ph-page h2 { font-family:var(--fd); font-size:34px; font-style:italic; font-weight:400; color:rgba(243,227,178,.35); }
+.ph-page p  { font-size:13.5px; color:rgba(243,227,178,.22); font-weight:300; }
+
+/* ═══════════════════════════════════════════════
+   CONTENT COMPONENTS
+═══════════════════════════════════════════════ */
+
+/* prose */
+.prose { font-size:15px; line-height:1.9; color:rgba(243,227,178,.68); font-weight:300; }
+.prose p + p { margin-top:16px; }
+.prose strong { color:var(--v); font-weight:600; }
+.prose em { color:rgba(243,227,178,.82); font-style:italic; }
+.prose ul { margin:14px 0 14px 20px; list-style:disc; display:flex; flex-direction:column; gap:8px; }
+.prose ul li { font-size:15px; line-height:1.8; color:rgba(243,227,178,.68); }
+.prose ol { margin:14px 0 14px 20px; list-style:decimal; display:flex; flex-direction:column; gap:8px; }
+.prose ol li { font-size:15px; line-height:1.8; color:rgba(243,227,178,.68); }
+
+/* section divider */
+.sdiv { display:flex; align-items:center; gap:14px; margin:52px 0 38px; }
+.sdiv-l { flex:1; height:1px; background:rgba(243,227,178,.08); }
+.sdiv-t { font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:3px; color:rgba(243,227,178,.25); white-space:nowrap; }
+
+/* pull quote */
+.pq { border-left:3px solid var(--r); padding:24px 28px; background:rgba(116,7,13,.07); border-radius:0 10px 10px 0; margin:40px 0; }
+.pq p { font-family:var(--fd); font-size:19px; font-style:italic; line-height:1.56; color:var(--v); font-weight:400; }
+
+/* highlight box */
+.hbox { background:rgba(70,70,42,.18); border:1px solid rgba(70,70,42,.42); border-radius:12px; padding:30px 34px; margin:40px 0; }
+.hbox h3 { font-family:var(--fd); font-size:19px; font-weight:500; color:var(--v); margin-bottom:12px; }
+.hbox p  { font-size:14px; line-height:1.85; color:rgba(243,227,178,.62); font-weight:300; }
+.hbox p + p { margin-top:10px; }
+
+/* note box */
+.note { background:rgba(243,227,178,.04); border:1px solid rgba(243,227,178,.1); border-radius:10px; padding:24px 28px; margin:32px 0; font-size:14px; line-height:1.8; color:rgba(243,227,178,.6); font-style:italic; font-weight:300; }
+
+/* two-col */
+.two { display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:start; }
+
+/* cards */
+.cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:2px; }
+.card { background:rgba(243,227,178,.028); border:1px solid rgba(243,227,178,.07); padding:30px 26px; transition:background .3s, border-color .3s; position:relative; overflow:hidden; }
+.card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(to right,var(--r),transparent); transform:scaleX(0); transform-origin:left; transition:transform .4s var(--ease); }
+.card:hover { background:rgba(243,227,178,.052); border-color:rgba(243,227,178,.13); }
+.card:hover::before { transform:scaleX(1); }
+.card-ic { width:36px; height:36px; background:rgba(116,7,13,.22); border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:15px; margin-bottom:16px; }
+.card-t { font-family:var(--fd); font-size:17px; font-weight:500; color:var(--v); margin-bottom:9px; line-height:1.25; }
+.card-b { font-size:13.5px; line-height:1.75; color:rgba(243,227,178,.57); font-weight:300; }
+
+/* steps */
+.steps { display:flex; flex-direction:column; }
+.step { display:grid; grid-template-columns:60px 1fr; gap:22px; padding:34px 0; border-bottom:1px solid rgba(243,227,178,.07); transition:padding-left .25s; }
+.step:hover { padding-left:5px; }
+.step-n { font-family:var(--fd); font-size:42px; font-weight:300; color:rgba(116,7,13,.36); line-height:1; letter-spacing:-2px; }
+.step-t { font-family:var(--fd); font-size:19px; font-weight:500; color:var(--v); margin-bottom:8px; }
+.step-d { font-size:14.5px; line-height:1.82; color:rgba(243,227,178,.6); font-weight:300; }
+
+/* timeline */
+.tl { position:relative; padding-left:28px; }
+.tl::before { content:''; position:absolute; left:7px; top:0; bottom:0; width:1px; background:linear-gradient(to bottom,var(--r),rgba(116,7,13,.06)); }
+.tl-i { position:relative; margin-bottom:36px; }
+.tl-i::before { content:''; position:absolute; left:-28px; top:5px; width:9px; height:9px; border-radius:50%; background:var(--r); border:2px solid var(--b); box-shadow:0 0 0 3px rgba(116,7,13,.18); }
+.tl-k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:var(--r); margin-bottom:5px; }
+.tl-t { font-family:var(--fd); font-size:17px; font-weight:500; color:var(--v); margin-bottom:6px; }
+.tl-d { font-size:13.5px; line-height:1.82; color:rgba(243,227,178,.58); font-weight:300; }
+.badge { display:inline-block; background:rgba(116,7,13,.18); border:1px solid rgba(116,7,13,.36); color:var(--v); font-size:11px; font-weight:600; padding:3px 11px; border-radius:20px; margin-top:7px; }
+
+/* schedule table */
+.sched { width:100%; border-collapse:collapse; margin-top:24px; }
+.sched th { text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:rgba(243,227,178,.32); padding:10px 18px; border-bottom:1px solid rgba(243,227,178,.09); }
+.sched td { padding:15px 18px; border-bottom:1px solid rgba(243,227,178,.05); font-size:13.5px; color:rgba(243,227,178,.65); vertical-align:top; }
+.sched td:first-child { color:var(--v); font-weight:500; white-space:nowrap; }
+.sched tr:hover td { background:rgba(243,227,178,.025); }
+
+/* citation style card */
+.cc { background:rgba(243,227,178,.032); border:1px solid rgba(243,227,178,.08); border-radius:10px; padding:32px; margin-bottom:18px; }
+.cc-h { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+.cc-n { font-family:var(--fd); font-size:24px; font-style:italic; color:var(--v); }
+.cc-tag { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1.8px; color:var(--r); background:rgba(116,7,13,.13); padding:5px 12px; border-radius:20px; align-self:center; }
+.cc-eg { font-family:'Courier New',monospace; font-size:12px; background:rgba(243,227,178,.04); border-left:3px solid var(--r); padding:10px 14px; border-radius:0 6px 6px 0; color:var(--v); margin-bottom:14px; }
+.cc-d  { font-size:13.5px; line-height:1.8; color:rgba(243,227,178,.58); font-weight:300; }
+.cc-d + .cc-d { margin-top:9px; }
+
+/* inner tabs */
+.itabs { display:flex; gap:2px; margin-bottom:36px; border:1px solid rgba(243,227,178,.09); border-radius:9px; padding:4px; background:rgba(243,227,178,.022); flex-wrap:wrap; }
+.it { background:none; border:none; cursor:pointer; font-family:var(--fb); font-size:12.5px; font-weight:500; color:rgba(243,227,178,.48); padding:9px 15px; border-radius:6px; transition:color .22s, background .22s; letter-spacing:.2px; white-space:nowrap; }
+.it.active { background:var(--r); color:var(--v); }
+.it:hover:not(.active) { background:rgba(243,227,178,.06); color:var(--v); }
+.itp { display:none; }
+.itp.active { display:block; animation:fIn .3s var(--ease); }
+
+/* section heading inside content */
+.sec-h { font-family:var(--fd); font-size:22px; font-weight:500; color:var(--v); margin:40px 0 16px; line-height:1.2; }
+.sec-h2 { font-family:var(--fd); font-size:18px; font-weight:500; color:var(--v); margin:28px 0 12px; }
+.sec-h3 { font-size:14.5px; font-weight:600; color:var(--v); margin:20px 0 8px; letter-spacing:.2px; }
+
+/* dot list (custom styled) */
+.dot-list { display:flex; flex-direction:column; gap:10px; margin:14px 0; }
+.dot-list li { font-size:14.5px; line-height:1.8; color:rgba(243,227,178,.65); font-weight:300; padding-left:18px; position:relative; }
+.dot-list li::before { content:'·'; position:absolute; left:0; color:var(--r); font-size:18px; line-height:1.2; }
+.dot-list li strong { color:var(--v); font-weight:600; }
+
+/* num list */
+.num-list { display:flex; flex-direction:column; gap:10px; margin:14px 0 14px 18px; list-style:decimal; }
+.num-list li { font-size:14.5px; line-height:1.8; color:rgba(243,227,178,.65); font-weight:300; }
+.num-list li strong { color:var(--v); font-weight:600; }
+
+/* events list */
+.ev-item { border:1px solid rgba(243,227,178,.08); border-radius:10px; padding:32px; margin-bottom:16px; background:rgba(243,227,178,.022); transition:border-color .3s, background .3s; }
+.ev-item:hover { border-color:rgba(243,227,178,.14); background:rgba(243,227,178,.042); }
+.ev-tag { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:2.5px; color:var(--r); margin-bottom:10px; }
+.ev-title { font-family:var(--fd); font-size:20px; font-weight:500; color:var(--v); margin-bottom:10px; line-height:1.25; }
+.ev-desc  { font-size:14px; line-height:1.8; color:rgba(243,227,178,.6); font-weight:300; margin-bottom:12px; }
+.ev-meta  { display:flex; gap:20px; flex-wrap:wrap; }
+.ev-meta span { font-size:12px; font-weight:500; color:rgba(243,227,178,.38); text-transform:uppercase; letter-spacing:1.2px; }
+.ev-meta span strong { color:rgba(243,227,178,.65); font-weight:600; }
+.ev-link { display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; color:var(--r); margin-top:12px; transition:opacity .2s; }
+.ev-link:hover { opacity:.75; }
+
+/* two stats */
+.big-stats { display:grid; grid-template-columns:1fr 1fr; gap:2px; margin:36px 0; }
+.bst { background:rgba(243,227,178,.028); border:1px solid rgba(243,227,178,.07); padding:32px; text-align:center; }
+.bst-n { font-family:var(--fd); font-size:64px; font-weight:300; color:var(--v); letter-spacing:-3px; line-height:1; display:block; }
+.bst-l { font-size:12px; text-transform:uppercase; letter-spacing:2px; color:rgba(243,227,178,.38); margin-top:7px; display:block; }
+
+/* inline link */
+.lnk { color:rgba(243,227,178,.6); text-decoration:underline; text-underline-offset:3px; font-size:13.5px; transition:color .2s; word-break:break-all; }
+.lnk:hover { color:var(--v); }
+
+/* ═══════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════ */
+footer {
+  position: relative;     /* Активируем контекст наложения */
+  z-index: 10;            /* Выталкиваем футер на передний план, поверх картинки */
+  background: var(--b);   /* Заливаем фоном сайта (#310F10), чтобы картинка не просвечивала */
+}
+
+.footer { 
+  border-top:1px solid rgba(243,227,178,.07); 
+  padding:48px 48px 34px; 
+  max-width:var(--mw); 
+  margin:0 auto; 
+}
+.footer-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:36px; flex-wrap:wrap; gap:24px; }
+.f-brand { font-family:var(--fd); font-size:26px; font-style:italic; color:var(--v); }
+.f-tag   { font-size:12px; color:rgba(243,227,178,.32); margin-top:6px; }
+.f-nav   { display:flex; gap:22px; flex-wrap:wrap; align-items:center; }
+.f-nav button { background:none; border:none; cursor:pointer; font-family:var(--fb); font-size:12.5px; color:rgba(243,227,178,.4); transition:color .2s; padding:0; }
+.f-nav button:hover { color:var(--v); }
+.footer-bot { display:flex; justify-content:space-between; border-top:1px solid rgba(243,227,178,.05); padding-top:18px; font-size:11.5px; color:rgba(243,227,178,.18); flex-wrap:wrap; gap:10px; }
+
+/* ═══════════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════════ */
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:var(--b); }
+::-webkit-scrollbar-thumb { background:rgba(116,7,13,.45); border-radius:3px; }
+::-webkit-scrollbar-thumb:hover { background:var(--r); }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+@media(max-width:900px){
+  .sidebar { display:none; }
+  .hub-main { padding:44px 22px 80px; }
+  .two { grid-template-columns:1fr; }
+  .big-stats { grid-template-columns:1fr 1fr; }
+}
+@media(max-width:680px){
+  .nav { padding:0 18px; }
+  .nav-links { display:none; }
+  .hero-in { padding:50px 22px; }
+  .std { padding:50px 22px 80px; }
+  .footer { padding:44px 22px 30px; }
+  .step { grid-template-columns:44px 1fr; }
+  .big-stats { grid-template-columns:1fr; }
+}
+
+/* АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНОЙ ВЕРСИИ ГЛАВНОЙ СТРАНИЦЫ */
+  @media (max-width: 768px) {
+    #page-home.active {
+      display: flex;
+      flex-direction: column;
+      height: auto !important;
+      min-height: 100vh;
+    }
+
+    .hero-in {
+      padding: 40px 20px !important;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .hero-content {
+      max-width: 100% !important;
+      text-align: center; /* Центрируем текст на мобильных для красоты */
+    }
+
+    .h-title {
+      font-size: 2.5rem !important; /* Уменьшаем шрифт заголовка, чтобы он не вылезал за экран */
+      line-height: 1.2 !important;
+    }
+
+    .h-rule {
+      margin: 20px auto !important; /* Центрируем разделительную линию */
+    }
+
+    .h-btns {
+      justify-content: center; /* Центрируем кнопки */
+      flex-direction: column;  /* На узких экранах кнопки встанут друг под другом */
+      gap: 12px !important;
+    }
+
+    .h-btns button {
+      width: 100%; /* Кнопки будут на всю ширину экрана */
+    }
+
+    .h-stats {
+      flex-direction: column; /* Статистика в колонку */
+      gap: 20px !important;
+      margin-top: 40px !important;
+    }
+
+    /* Адаптация фоновой картинки под мобильные */
+    .hero-bg-image {
+      opacity: 0.15; /* Делаем картинку бледнее, чтобы текст поверх нее легко читался */
+      justify-content: center; /* Центрируем её */
+    }
+
+    .hero-bg-image img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important; /* Картинка полностью заполнит экран как подложка */
+    }
+    
+    .footer {
+      padding: 30px 20px 20px !important;
+    }
+  }
+
+/* ═══════════════════════════════════════════════
+   HAMBURGER BUTTON  (mobile only)
+═══════════════════════════════════════════════ */
+.burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background .22s;
+  flex-shrink: 0;
+}
+.burger:hover { background: rgba(243,227,178,.08); }
+.burger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--v);
+  border-radius: 2px;
+  transition: transform .35s var(--ease), opacity .25s, width .3s var(--ease);
+  transform-origin: center;
+}
+/* X state */
+.burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.burger.open span:nth-child(2) { opacity: 0; width: 0; }
+.burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+@media(max-width:680px) {
+  .burger { display: flex; }
+}
+
+/* ═══════════════════════════════════════════════
+   MOBILE MENU OVERLAY
+═══════════════════════════════════════════════ */
+.mob-menu {
+  display: none;
+  position: fixed;
+  top: var(--nav-h);
+  left: 0; right: 0; bottom: 0;
+  z-index: 250;
+  background: rgba(49,15,16,.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  flex-direction: column;
+  padding: 32px 28px 48px;
+  overflow-y: auto;
+  animation: mobIn .3s var(--ease);
+}
+.mob-menu.open { display: flex; }
+
+@keyframes mobIn {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* divider label inside mobile menu */
+.mob-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: rgba(243,227,178,.28);
+  padding: 0 4px;
+  margin-bottom: 8px;
+  margin-top: 28px;
+}
+.mob-label:first-child { margin-top: 0; }
+
+/* main nav items */
+.mob-link {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--fd);
+  font-size: 26px;
+  font-weight: 400;
+  font-style: italic;
+  color: rgba(243,227,178,.75);
+  text-align: left;
+  padding: 10px 4px;
+  border-bottom: 1px solid rgba(243,227,178,.07);
+  letter-spacing: -.3px;
+  transition: color .22s, padding-left .22s;
+  line-height: 1.15;
+}
+.mob-link:hover,
+.mob-link.active { color: var(--v); padding-left: 10px; }
+.mob-link:last-of-type { border-bottom: none; }
+
+/* sub-items (Research Hub) */
+.mob-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 4px;
+  padding-left: 16px;
+  border-left: 2px solid rgba(116,7,13,.35);
+}
+.mob-sub-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--fb);
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(243,227,178,.52);
+  text-align: left;
+  padding: 9px 6px;
+  border-bottom: 1px solid rgba(243,227,178,.05);
+  transition: color .2s, padding-left .2s;
+  letter-spacing: .15px;
+}
+.mob-sub-btn:last-child { border-bottom: none; }
+.mob-sub-btn:hover { color: var(--v); padding-left: 6px; }
+
+/* CTA at the bottom of mobile menu */
+.mob-cta {
+  margin-top: auto;
+  padding-top: 32px;
+}
+.mob-cta button {
+  width: 100%;
+  background: var(--r);
+  color: var(--v);
+  font-family: var(--fb);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  letter-spacing: .4px;
+  transition: background .25s;
+}
+.mob-cta button:hover { background: #8f0a12; }
+
+</style>
+</head>
+<body>
+
+<!-- ╔══════════════════════════════════════════╗
+     ║  NAVBAR                                  ║
+     ╚══════════════════════════════════════════╝ -->
+<nav class="nav" id="navbar">
+  <div class="logo" onclick="go('home')">
+    <span class="logo-w">YRA</span>
+    <span class="logo-s">Youth Research<br>Accelerator</span>
+  </div>
+  <ul class="nav-links">
+    <li><button class="nb active" id="nb-home"       onclick="go('home')">Home</button></li>
+    <li><button class="nb"        id="nb-about"      onclick="go('about')">About</button></li>
+    <li><button class="nb"        id="nb-hub"        onclick="go('hub')">Research Hub</button></li>
+    <li><button class="nb"        id="nb-events"     onclick="go('events')">Events</button></li>
+    <li><button class="nb"        id="nb-mentorship" onclick="go('mentorship')">Mentorship</button></li>
+  </ul>
+
+  <!-- Hamburger — mobile only -->
+  <button class="burger" id="burger" aria-label="Open menu" onclick="toggleMobMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ╔══════════════════════════════════════════╗
+     ║  MOBILE MENU                             ║
+     ╚══════════════════════════════════════════╝ -->
+<div class="mob-menu" id="mob-menu">
+  <div class="mob-label">Navigation</div>
+  <button class="mob-link" id="mnb-home"        onclick="mobGo('home')">Home</button>
+  <button class="mob-link" id="mnb-about"       onclick="mobGo('about')">About</button>
+  <button class="mob-link" id="mnb-hub"         onclick="mobGo('hub')">Research Hub</button>
+  <div class="mob-sub">
+    <button class="mob-sub-btn" onclick="mobGoHub('basics')">01 — Basics</button>
+    <button class="mob-sub-btn" onclick="mobGoHub('topic')">02 — Choose a Topic</button>
+    <button class="mob-sub-btn" onclick="mobGoHub('lit')">03 — Find Literature</button>
+    <button class="mob-sub-btn" onclick="mobGoHub('data')">04 — Collect Data</button>
+    <button class="mob-sub-btn" onclick="mobGoHub('write')">05 — Write it Up</button>
+  </div>
+  <button class="mob-link" id="mnb-events"      onclick="mobGo('events')">Events</button>
+  <button class="mob-link" id="mnb-mentorship"  onclick="mobGo('mentorship')">Mentorship</button>
+  <div class="mob-cta">
+    <button onclick="closeMobMenu()">Get Started</button>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════════════════╗
+     ║  HOME                                    ║
+     ╚══════════════════════════════════════════╝ -->
+<section class="page active" id="page-home">
+  
+  <div class="hero-bg-image">
+    <img src="nguy-n-hi-p-F5v13ksK7m4-unsplash (1).jpg">
+  </div>
+
+  <div class="hero-in">
+    <div class="hero-content">
+      <div class="h-kicker">From Ideas to Publications</div>
+      <h1 class="h-title">
+        Build Research.<br>
+        Think Deeper.<br>
+        <span>Publish with Purpose.</span>
+      </h1>
+      <div class="h-rule"></div>
+      <p class="h-lead">For the Next Generation of Researchers.</p>
+      <div class="h-btns">
+        <button class="btn-p" onclick="go('hub')">Explore the Hub</button>
+        <button class="btn-g" onclick="goHub('basics')">Start with Basics</button>
+      </div>
+      <div class="h-stats">
+        <div><span class="stat-n">5</span><span class="stat-l">Research Types</span></div>
+        <div><span class="stat-n">4</span><span class="stat-l">Program Weeks</span></div>
+        <div><span class="stat-n">300h</span><span class="stat-l">Deep Guidance</span></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer">
+      <div class="footer-top">
+        <div>
+          <div class="f-brand">YRA</div>
+          <div class="f-tag">Youth Research Accelerator — For the Next Generation of Researchers.</div>
+        </div>
+        <nav class="f-nav">
+          <button><a href="https://donskovaadelina-oss.github.io/portfolio/" target="_blank">Creator of Website</a></button>
+          <button onclick="go('home')">Home</button>
+          <button onclick="go('about')">About</button>
+          <button onclick="go('hub')">Research Hub</button>
+          <button onclick="go('events')">Events</button>
+          <button onclick="go('mentorship')">Mentorship</button>
+        </nav>
+      </div>
+      <div class="footer-bot">
+        <span>© 2026 Youth Research Accelerator. All rights reserved.</span>
+        <span>Built for researchers who mean it.</span>
+      </div>
+    </div>
+  </footer>
+
+</section>
+
+<!-- ╔══════════════════════════════════════════╗
+     ║  ABOUT                                   ║
+     ╚══════════════════════════════════════════╝ -->
+<section class="page" id="page-about">
+  <div class="std">
+    <div class="ph">
+      <div class="ph-k">About</div>
+      <h1 class="ph-t">Youth Research Accelerator</h1>
+      <p class="ph-s">Youth Research Accelerator helps early-career researchers move from curiosity to completion. No gatekeeping. No unnecessary jargon. Just structure, mentorship, and a community that remembers how hard the beginning really is.</p>
+    </div>
+
+    <h2 class="sec-h">How YRA began</h2>
+    <div class="prose">
+      <p>Youth Research Accelerator was founded as a response to a persistent gap in research education. Many students and early-career researchers possess the curiosity and potential to conduct meaningful work, yet they lack clear guidance on how to begin: how to identify a research gap, how to structure a proposal, or how to write in a style that academic journals will take seriously. Traditional institutions often assume these skills are already in place or will be acquired informally. In practice, many promising ideas stall simply because structured support is not available.</p>
+      <p>YRA started as a small educational channel focused on practical research skills. The content was direct: guides, templates, and exercises designed to make the research process accessible. As the audience grew, so did the demand for deeper engagement. This led to the development of the mentorship program, followed by competitions, events, and eventually this platform. What began as a resource-sharing channel has become a structured community dedicated to early-career research development.</p>
+    </div>
+
+    <h2 class="sec-h">What we believe</h2>
+    <div class="prose">
+      <p>Research is a skill you learn, not a talent you are born with. Most academic spaces rely on unspoken rules — you are expected to already know how things work, and asking feels risky. YRA makes the process transparent. We explain things plainly. And we believe the only way to learn research is to do it: pick a question, gather sources, make mistakes, revise, finish. Every YRA program is product-based. You leave with something real.</p>
+    </div>
+
+    <h2 class="sec-h">What we do</h2>
+    <div class="dot-list" style="margin-bottom:28px;">
+      <li><strong>Free educational content:</strong> Guides, templates, checklists, exercises — step-by-step, practical, accessible to anyone.<br>
+        <span style="margin-top:8px; display:block;">Full content list — <a class="lnk" href="https://docs.google.com/document/d/16vDLJ4oLV--kKAGdCt-1xHR1ubO9N1SCcX8pmcjZyp4/edit?usp=drivesdk" target="_blank">https://docs.google.com/document/d/16vDLJ4oLV--kKAGdCt-1xHR1ubO9N1SCcX8pmcjZyp4/edit?usp=drivesdk</a></span>
+      </li>
+      <li><strong>Competitions and events:</strong> Proposal pitches, peer review challenges, writing sprints. Deadlines that push you forward and a chance to see what others are working on.</li>
+      <li><strong>Community:</strong> A growing network of young researchers who share opportunities, answer questions, and remember that everyone started somewhere.<br>
+        <span style="margin-top:8px; display:block;">If you haven't joined yet — <a class="lnk" href="https://t.me/yracomm" target="_blank">https://t.me/yracomm</a></span>
+      </li>
+      <li><strong>Mentorship Program:</strong> Four weeks, groups of five, one dedicated mentor. You finish with a complete Research Proposal.</li>
+    </div>
+
+    <h2 class="sec-h">Why YRA exists</h2>
+    <div class="prose">
+      <p>There is a gap between wanting to do research and actually doing it. Schools and universities teach theory; they rarely teach the practical craft of writing a proposal, structuring an argument, or navigating publishing. YRA fills that gap. The platform serves students with a research question but no supervisor, early-career researchers whose institutions offer limited writing support, and curious individuals who are not sure they are permitted to do research.</p>
+    </div>
+  </div>
+
+  <footer id="footer-about">
+    <div class="footer"><div class="footer-top"><div><div class="f-brand">YRA</div><div class="f-tag">Youth Research Accelerator — For the Next Generation of Researchers.</div></div><nav class="f-nav"><button><a href="https://donskovaadelina-oss.github.io/portfolio/" target="_blank">Creator of Website</a></button><button onclick="go('home')">Home</button><button onclick="go('about')">About</button><button onclick="go('hub')">Research Hub</button><button onclick="go('events')">Events</button><button onclick="go('mentorship')">Mentorship</button></nav></div><div class="footer-bot"><span>© 2026 Youth Research Accelerator. All rights reserved.</span><span>Built for researchers who mean it.</span></div></div>
+  </footer>
+</section>
+
+<!-- ╔══════════════════════════════════════════╗
+     ║  RESEARCH HUB                            ║
+     ╚══════════════════════════════════════════╝ -->
+<section class="page" id="page-hub">
+  <div class="hub">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sb-label">Research Hub</div>
+      <nav class="sb-nav">
+        <button class="sb-btn active" id="sb-basics"     onclick="goHub('basics')"><span class="sb-num">01</span>Basics</button>
+        <button class="sb-btn"        id="sb-topic"      onclick="goHub('topic')"><span class="sb-num">02</span>Choose a Topic</button>
+        <button class="sb-btn"        id="sb-lit"        onclick="goHub('lit')"><span class="sb-num">03</span>Find Literature</button>
+        <button class="sb-btn"        id="sb-data"       onclick="goHub('data')"><span class="sb-num">04</span>Collect Data</button>
+        <button class="sb-btn"        id="sb-write"      onclick="goHub('write')"><span class="sb-num">05</span>Write it Up</button>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="hub-main" id="hub-main">
+
+      <!-- ▸▸ BASICS ◂◂ -->
+      <div class="sp active" id="sp-basics">
+        <div class="ph">
+          <div class="ph-k">Basics</div>
+          <h1 class="ph-t">What does the word "research" mean?</h1>
+        </div>
+
+        <div class="prose">
+          <p>Research is creative and systematic work is undertaken to increase the stock of knowledge. lt involves the collection, organization, and analysis of evidence to increase understanding of a topic, characterized by a particular attentiveness to controlling sources of bias and error.</p>
+          <p>The purpose of research is to further understand the world and to learn how this knowledge can be applied to better everyday life. It is an integral part of problem solving.</p>
+          <p>Research begins with a problem or question. The researcher studies existing information (literature review), identifies gaps, and then chooses appropriate methods to collect data.</p>
+          <p>These methods can be quantitative (numbers, statistics, experiments), qualitative (interviews, observations, texts), or mixed.</p>
+        </div>
+
+        <div class="sdiv"><div class="sdiv-l"></div><span class="sdiv-t">Types of Research — Short Overview</span><div class="sdiv-l"></div></div>
+
+        <div class="prose" style="margin-bottom:28px;"><p>There are several main types of research, each defined by its purpose and approach.</p></div>
+
+        <div class="cards">
+          <div class="card"><div class="card-ic">◈</div><h3 class="card-t">Basic Research</h3><p class="card-b">Basic research focuses on expanding knowledge and understanding without an immediate practical application. It aims to explore theories and underlying principles.</p></div>
+          <div class="card"><div class="card-ic">◎</div><h3 class="card-t">Applied Research</h3><p class="card-b">Applied research, in contrast, is designed to solve specific real-world problems. It takes existing knowledge and uses it in practical contexts.</p></div>
+          <div class="card"><div class="card-ic">▦</div><h3 class="card-t">Quantitative Research</h3><p class="card-b">Quantitative research deals with numerical data. It involves measurement, statistical analysis, and identifying patterns or relationships between variables.</p></div>
+          <div class="card"><div class="card-ic">◐</div><h3 class="card-t">Qualitative Research</h3><p class="card-b">Qualitative research focuses on meanings, experiences, and perspectives. It is often based on interviews, observations, or open-ended responses.</p></div>
+          <div class="card"><div class="card-ic">⊕</div><h3 class="card-t">Mixed Methods Research</h3><p class="card-b">Mixed methods research combines both quantitative and qualitative approaches to provide a more comprehensive understanding of a topic.</p></div>
+          <div class="card"><div class="card-ic">⊞</div><h3 class="card-t">Experimental Research</h3><p class="card-b">Experimental research is used to test cause-and-effect relationships by controlling variables and observing outcomes.</p></div>
+        </div>
+      </div><!-- /basics -->
+
+      <!-- ▸▸ CHOOSE A TOPIC ◂◂ -->
+      <div class="sp" id="sp-topic">
+        <div class="ph">
+          <div class="ph-k">Step 02</div>
+          <h1 class="ph-t">How to Choose a Research Topic: A Practical Guide</h1>
+          <p class="ph-s">A great research project begins with a well-chosen topic. But how do you move from a broad area of interest to a focused, researchable question? This guide walks you through the process step by step.</p>
+        </div>
+
+        <h2 class="sec-h">1. Start with What Genuinely Interests You</h2>
+        <div class="prose">
+          <p>Research demands sustained attention over weeks or months. If you are not genuinely curious about the topic, the process becomes a chore. Begin by asking yourself broad, open-ended questions:</p>
+        </div>
+        <ul class="dot-list" style="margin:14px 0;">
+          <li>What topic in your field do you find yourself thinking about outside of class?</li>
+          <li>What problem have you encountered that nobody seems to have solved?</li>
+          <li>What claim or statistic have you read that you doubt — and would like to test?</li>
+        </ul>
+        <div class="prose">
+          <p>Write down three to five broad areas of interest. Do not censor yourself at this stage. Quantity matters, as initial ideas can later be narrowed and refined.</p>
+          <p><em>Example: Broad interest — "mental health." Too broad for a research project, but an excellent starting point.</em></p>
+        </div>
+
+        <h2 class="sec-h">2. Narrow the Scope: From Area to Question</h2>
+        <div class="prose">
+          <p>A common beginner mistake is choosing a topic so broad that it becomes unresearchable within practical constraints. The solution is progressive narrowing.</p>
+          <p><strong>Strategy: The Funnel Method</strong></p>
+          <p>Apply three filters to your broad topic:</p>
+          <table class="funnel-table">
+          <thead>
+              <tr>
+                  <th>Step</th>
+                  <th>Action</th>
+                  <th>Example Applied to "Mental Health"</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <td><strong>Population</strong></td>
+                  <td>Who exactly?</td>
+                  <td>Adolescents aged 14–18</td>
+              </tr>
+              <tr>
+                  <td><strong>Context</strong></td>
+                  <td>Where, when, under what conditions?</td>
+                  <td>During the university application process</td>
+              </tr>
+              <tr>
+                  <td><strong>Mechanism</strong></td>
+                  <td>What specific factor or relationship?</td>
+                  <td>The effect of social media use on anxiety levels</td>
+              </tr>
+          </tbody>
+      </table>
+          <p>Result of narrowing: Instead of "mental health," the topic becomes "the relationship between social media consumption and pre-admission anxiety among high school students applying to university."</p>
+          <p>This question is specific, researchable, and bounded in scope.</p>
+        </div>
+
+        <h2 class="sec-h">3. Use Proven Generation Strategies</h2>
+        <div class="prose"><p>If the blank page intimidates you, structured techniques can help.</p></div>
+
+        <h3 class="sec-h2">Strategy A: Gap-Spotting in Existing Literature</h3>
+        <div class="prose">
+          <p>Pick three recent review articles in your field of interest. Read the final sections — the part where authors write "Further research is needed to..." or "Limitations of this study include..." Those sentences are gold. They tell you exactly what established researchers consider unanswered.</p>
+        </div>
+
+        <h3 class="sec-h2">Strategy B: The 5-Question Stress Test</h3>
+        <div class="prose"><p>For any potential topic, ask these five questions. If you can answer "yes" to all, the topic is viable:</p></div>
+        <ol class="num-list">
+          <li>Is it researchable? Can data be collected, or evidence found, within your timeframe?</li>
+          <li>Is it specific? Can you state the core idea in one sentence?</li>
+          <li>Is it significant? Does answering the question matter to anyone beyond you?</li>
+          <li>Is it original? Does it add something new, even if small — a new population, a new context, a new combination of variables?</li>
+          <li>Is it interesting to you? Will you still care about it in a month?</li>
+        </ol>
+
+        <h3 class="sec-h2">Strategy C: The 3-Minute Pitch Test</h3>
+        <div class="prose">
+          <p>Explain your topic idea to a peer in three minutes, without notes. Then ask them two questions: "What is unclear?" and "What would you want to know next?" Their answers will reveal logical gaps in your thinking.</p>
+        </div>
+
+        <h2 class="sec-h">4. Align Your Topic with Your Method</h2>
+        <div class="prose"><p>A researchable topic is inseparable from the method you plan to use. Before finalizing, ask whether the topic fits a realistic research design.</p></div>
+        <ul class="dot-list">
+          <li><strong>Quantitative approach:</strong> If you plan a survey or data analysis, your topic must involve measurable variables. "Social media use" can be measured in hours; "anxiety" can be measured by validated scales. Vague concepts like "well-being" require careful operationalization.</li>
+          <li><strong>Qualitative approach:</strong> If you plan interviews or focus groups, your topic must involve experiences, perceptions, or processes. Access to participants is critical: do you know how to reach the people you need to interview?</li>
+          <li><strong>Mixed methods:</strong> Combining both requires a clear rationale. The qualitative component should explain the numbers the quantitative component reveals, not just duplicate them.</li>
+        </ul>
+
+        <h2 class="sec-h">5. Avoid Common Pitfalls</h2>
+        <div class="prose"><p>Certain types of topics reliably cause difficulties for early-career researchers. Watch for these warning signs.</p></div>
+        <!-- table here -->
+          <table class="funnel-table">
+          <thead>
+              <tr>
+                  <th>Pitfall</th>
+                  <th>What it looks like</th>
+                  <th>How to fix it</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <td><strong>Too Broad</strong></td>
+                  <td>"The impact of technology on education"</td>
+                  <td>Narrow by specifying which technology, which educational level, which outcome</td>
+              </tr>
+              <tr>
+                  <td><strong>Too narrow or trivial</strong></td>
+                  <td>"Do students in my school prefer pencils or pens for note-taking?"</td>
+                  <td>Ask: who cares about the answer? If only you, broaden slightly</td>
+              </tr>
+              <tr>
+                  <td><strong>Insufficient data</strong></td>
+                  <td>A topic requiring classified government documents or rare archival materials</td>
+                  <td>Verify data availability before committing the topic</td>
+              </tr>
+              <tr>
+                  <td><strong>Purely normative</strong></td>
+                  <td>"Should universities be free?"</td>
+                  <td>Normative questions ask how things *ought* to be. Researchable questions ask how things *are*. Reframe: "What is the relationship between tuition fees and enrollment among low-income students?"</td>
+              </tr>
+              <tr>
+                  <td><strong>Already definitely answered</strong></td>
+                  <td>A question where a single Google search or textbook chapter provides a complete answer</td>
+                  <td>Dig deeper. Find the disagreement among scholars. Research lives where experts disagree</td>
+              </tr>
+          </tbody>
+      </table>
+
+        <h2 class="sec-h">6. Refine Your Topic Before Locking It In</h2>
+        <div class="prose"><p>Once you have a draft topic, refine it through three rounds of questioning.</p></div>
+
+        <h3 class="sec-h2">Round 1: The "So What" Check</h3>
+        <div class="prose"><p>Why would anyone read a paper on this topic? If the only answer is "because I wrote it," the topic needs more work. The best topics address a genuine gap, challenge an assumption, or apply an established idea to a new context.</p></div>
+
+        <h3 class="sec-h2">Round 2: The Feasibility Reality Check</h3>
+        <div class="prose"><p>Do you have the data, the access to participants, the software tools, and the time to complete this project within your deadline? If the answer is uncertain, scale down.</p></div>
+
+        <h3 class="sec-h2">Round 3: The Supervisor or Peer Review</h3>
+        <div class="prose"><p>Share your one-paragraph topic statement with a mentor, supervisor, or peer whose judgment you trust. Ask them: "What is the weakest part of this idea?" Listen carefully to the answer. Resistance to feedback is often a sign that the topic is not yet well-defined.</p></div>
+
+        <h2 class="sec-h">7. From Topic to Research Proposal</h2>
+        <div class="prose"><p>A well-chosen topic is the foundation. The next step is to formalize it into a Research Proposal. This involves:</p></div>
+        <ul class="dot-list" style="margin-bottom:24px;">
+          <li>Stating the research question precisely and concisely.</li>
+          <li>Summarizing what the existing literature says — and where the gap is.</li>
+          <li>Describing how you plan to answer the question (your method).</li>
+          <li>Explaining why the answer matters (the significance).</li>
+        </ul>
+        <div class="prose"><p>The YRA Mentorship Program is designed to guide you through exactly this process, from initial topic idea to a complete, defense-ready Research Proposal.</p></div>
+
+        <div class="note">Topic selection is not a single moment of inspiration. It is a structured process of progressive narrowing, testing, and refinement. Start broad, narrow strategically, test feasibility early, and seek feedback before committing. A well-chosen topic makes everything that follows — literature review, data collection, writing — significantly easier.</div>
+      </div><!-- /topic -->
+
+      <!-- ▸▸ FIND LITERATURE ◂◂ -->
+      <div class="sp" id="sp-lit">
+        <div class="ph">
+          <div class="ph-k">Step 03</div>
+          <h1 class="ph-t">How to Write a Literature Review</h1>
+          <p class="ph-s">A literature review is more than a summary of existing research. It is a critical synthesis that maps what is known, identifies what is missing, and positions your work within the scholarly conversation. Done well, it is the foundation upon which a strong research project is built.</p>
+        </div>
+
+        <h2 class="sec-h">What a Literature Review Does</h2>
+        <div class="prose"><p>A thorough review serves several essential functions:</p></div>
+        <ul class="dot-list" style="margin-bottom:24px;">
+          <li><strong>Establishes context</strong> — It shows what is already known so that your research question has a clear place in the field.</li>
+          <li><strong>Reveals gaps</strong> — Debates, contradictions, and unanswered questions become visible, helping you sharpen your focus.</li>
+          <li><strong>Prevents duplication</strong> — You avoid repeating work that others have already completed.</li>
+          <li><strong>Builds credibility</strong> — Examiners and reviewers trust researchers who demonstrate command of the relevant literature.</li>
+          <li><strong>Supports methodology</strong> — Reviewing how others have approached similar questions helps you select appropriate methods for your own study.</li>
+        </ul>
+
+        <h2 class="sec-h">The 5-Step Process</h2>
+
+        <div class="steps">
+          <div class="step">
+            <span class="step-n">01</span>
+            <div>
+              <h3 class="step-t">Define Your Scope</h3>
+              <p class="step-d">Write your research question in a single sentence. Decide on time boundaries, keywords, and the types of publications you will include. Keep this scope statement visible throughout the process — it keeps every later decision honest and prevents drifting into side topics.</p>
+            </div>
+          </div>
+          <div class="step">
+            <span class="step-n">02</span>
+            <div>
+              <h3 class="step-t">Search Systematically</h3>
+              <p class="step-d">Use academic databases relevant to your field. Record each search string, database, and filter in a log. This practice demonstrates rigour and allows anyone to reproduce your search path. When you start seeing the same articles and authors repeatedly, you have likely conducted a comprehensive search.</p>
+            </div>
+          </div>
+          <div class="step">
+            <span class="step-n">03</span>
+            <div>
+              <h3 class="step-t">Screen and Select</h3>
+              <p class="step-d">First, skim titles and abstracts. Keep only studies that speak directly to your question. Then read introductions and conclusions to confirm relevance. Discard generously — including irrelevant sources weakens a review. Tools like Zotero, Mendeley, or Rayyan can streamline this process.</p>
+            </div>
+          </div>
+          <div class="step">
+            <span class="step-n">04</span>
+            <div>
+              <h3 class="step-t">Read Critically and Take Structured Notes</h3>
+              <p class="step-d">For each source, record: the research aim, methodology, key findings, strengths and limitations, and how the work connects to or clashes with other studies. Using a synthesis matrix at this stage will make organizing patterns far easier later.</p>
+            </div>
+          </div>
+          <div class="step">
+            <span class="step-n">05</span>
+            <div>
+              <h3 class="step-t">Weave a Coherent Narrative</h3>
+              <p class="step-d">Group sources by theme, method, or chronological development — not by author name. Compare findings, highlight agreements, and expose contradictions. Point clearly to the gap your study will fill. Use synthesis language such as "The literature on [topic X] confirms..." or "A limitation of most of these studies is..." The goal is a connected story, not a list of summaries.</p>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="sec-h">Common Organizing Principles</h2>
+        <div class="prose">
+          <p>How you structure the body of your review depends on your topic and purpose:</p>
+          <!-- table here -->
+          <table class="funnel-table">
+            <thead>
+                <tr>
+                    <th>Approach</th>
+                    <th>When To Use</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Thematic</strong></td>
+                    <td>Grouping sources by recurring themes or concepts. The most common approach</td>
+                </tr>
+                <tr>
+                    <td><strong>Chronological</strong></td>
+                    <td>Tracing the development of ideas over time. Useful when historical context matters</td>
+                </tr>
+                <tr>
+                    <td><strong>Methodological</strong></td>
+                    <td>Comparing studies by their research methods. Useful across interdisciplinary topics</td>
+                </tr>
+                <tr>
+                    <td><strong>Theoretical</strong></td>
+                    <td>Organizing around different theoretical frameworks or models</td>
+                </tr>
+            </tbody>
+        </table>
+          <p>You may combine approaches — for instance, organizing thematically while discussing each theme chronologically.</p>
+        </div>
+
+        <h2 class="sec-h">What a Literature Review Is Not</h2>
+        <div class="prose"><p>Understanding what to avoid is as important as knowing what to do:</p></div>
+        <ul class="dot-list" style="margin-bottom:28px;">
+          <li><strong>Not a set of summaries</strong> — Summaries alone lack synthesis. Always connect ideas across sources.</li>
+          <li><strong>Not an annotated bibliography</strong> — An annotated bibliography lists sources with brief notes. A literature review tells a connected story.</li>
+          <li><strong>Not a chronological list</strong> — Simply describing studies in order of publication date without analysis misses the purpose entirely.</li>
+          <li><strong>Not a collection of quotations</strong> — Stringing together quotes from sources does not demonstrate understanding.</li>
+        </ul>
+
+        <h2 class="sec-h">Practical Tools for Managing References</h2>
+        <ul class="dot-list" style="margin-bottom:28px;">
+          <li><strong>Zotero</strong> — Free, open-source. Captures citations in one click.</li>
+          <li><strong>Mendeley</strong> — Cloud sync and shared folders for group work.</li>
+          <li><strong>EndNote</strong> — Powerful, widely supported if your institution licenses it.</li>
+          <li><strong>Connected Papers</strong> — Builds a visual map of related articles from a single seed paper.</li>
+          <li><strong>Litmaps</strong> — Alerts you when new work cites papers you already value.</li>
+        </ul>
+
+        <div class="note">A strong literature review does not simply describe what others have written. It organizes, critiques, and synthesizes existing knowledge to make a clear argument for why your research matters. Start with a well-defined scope, search systematically, read critically, and write with synthesis in mind from the very first draft.</div>
+
+        <div class="hbox" style="margin-top:36px;">
+          <h3>Next Steps</h3>
+          <p>Ready to begin your literature review process? Join the YRA Mentorship Program for structured guidance from an experienced researcher who will help you move from your initial topic to a complete, well-organized literature review.</p>
+        </div>
+      </div><!-- /literature -->
+
+      <!-- ▸▸ COLLECT DATA ◂◂ -->
+      <div class="sp" id="sp-data">
+        <div class="ph">
+          <div class="ph-k">Step 04</div>
+          <h1 class="ph-t">How to Collect Data: A Practical Guide</h1>
+          <p class="ph-s">You have a research question. You have a literature review. Now you need data — the raw material that will answer your question. Data collection is where research becomes real. Done systematically, it builds the foundation for credible findings. Done hastily, it undermines everything that follows.</p>
+        </div>
+
+        <h2 class="sec-h">Step 1: Align Your Method with Your Question</h2>
+        <div class="prose">
+          <p>The method must fit the question, not the other way around. Before choosing a tool, clarify what you need to know.</p>
+                    <table class="funnel-table">
+                    <thead>
+                        <tr>
+                            <th>Your Research Goal</th>
+                            <th>Suitable Approach</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Measure how much, how often, or therelationship between variables</strong></td>
+                            <td>Quantitative methods (surveys, structured observations, existing datasets)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Understand why, how, or what something means to people</strong></td>
+                            <td>Qualitative methods (interviews, focus groups, open-ended questionnaires)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Both breadth and depth</strong></td>
+                            <td>Mixed methods (survey plus follow-up interviews, for example)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+          <p><strong>Key question to ask yourself:</strong> What kind of evidence would convince a skeptical reader that your answer is correct? Let that guide your methodological choice.</p>
+        </div>
+
+        <h2 class="sec-h">Step 2: Prepare Thoroughly Before You Begin</h2>
+        <div class="prose"><p>Preparation prevents disaster. Before you collect a single data point, complete these tasks.</p></div>
+
+        <h3 class="sec-h2">Create your instruments:</h3>
+        <ul class="dot-list" style="margin-bottom:20px;">
+          <li><strong>Surveys:</strong> Draft every question. Use validated scales where available — they have been tested for reliability and save you from designing poor questions. Avoid double-barreled questions, leading questions, and jargon. Pilot-test the survey with three to five people similar to your target participants. Time how long it takes. Revise anything that confuses them.</li>
+          <li><strong>Interviews:</strong> Prepare a semi-structured guide with five to eight open-ended questions. Include prompts for follow-up. Avoid yes/no questions. Record a practice interview and listen critically. Check that you are not interrupting, leading, or talking more than the participant.</li>
+          <li><strong>Secondary data:</strong> Confirm access, variables available, and time coverage. Document the source completely for your methods section.</li>
+        </ul>
+
+        <h3 class="sec-h2">Obtain ethical clearance</h3>
+        <div class="prose"><p>Research involving people almost always requires ethical approval. Prepare an information sheet explaining the study purpose, procedures, risks, and rights. Design a consent form in plain language. Store these documents securely. Ethical approval is not bureaucracy — it is a commitment to participants' dignity and safety.</p></div>
+
+        <h3 class="sec-h2">Recruit participants</h3>
+        <div class="prose"><p>Define your population clearly. Specify inclusion and exclusion criteria. Plan your recruitment channels. Aim for a realistic sample size, not necessarily a large one. In qualitative research, saturation — when new interviews stop yielding new insights — determines sample size, not a fixed number.</p></div>
+
+        <h2 class="sec-h">Step 3: Execute Systematic Data Collection</h2>
+
+        <div class="two" style="margin-bottom:32px;">
+          <div class="card" style="border-radius:10px; padding:26px;">
+            <h3 class="card-t" style="margin-bottom:12px;">Quantitative Checklist</h3>
+            <ul class="dot-list">
+              <li>Distribute the survey through planned channels.</li>
+              <li>Monitor response rates during the fielding period.</li>
+              <li>Send reminders if the design permits.</li>
+              <li>Check incoming data weekly for anomalies — broken skip logic, impossible values, excessive missing responses.</li>
+              <li>When the survey closes, export data immediately and back it up in at least two locations.</li>
+            </ul>
+          </div>
+          <div class="card" style="border-radius:10px; padding:26px;">
+            <h3 class="card-t" style="margin-bottom:12px;">Qualitative Checklist</h3>
+            <ul class="dot-list">
+              <li>Conduct interviews in a quiet, private setting — physical or virtual.</li>
+              <li>Begin with easy, non-threatening questions to build rapport.</li>
+              <li>Listen more than you speak. Silence is useful: participants often fill it with revealing detail.</li>
+              <li>Take brief field notes immediately after each session — impressions, context, non-verbal cues.</li>
+              <li>Transcribe recordings accurately. If you transcribe yourself, you will know your data intimately.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="prose"><p><strong>Mixed methods note:</strong> Decide early whether the qualitative and quantitative components are sequential (one informs the other) or concurrent (both run simultaneously). Plan the integration point: when will the two data streams meet, and how will you combine them in analysis?</p></div>
+
+        <h2 class="sec-h">Step 4: Store, Clean, and Document</h2>
+        <div class="prose"><p>Data management often determines whether a study succeeds or fails.</p></div>
+        <ul class="dot-list" style="margin-bottom:24px;">
+          <li><strong>Naming conventions:</strong> Decide on a logical file naming system before you start and stick to it. Example: YRA_Interview_P01_20250510.mp3.</li>
+          <li><strong>Cleaning quantitative data:</strong> Screen for impossible values, missing data patterns, and inconsistencies. Document every cleaning decision. Original raw files should remain untouched — create a clean copy for analysis.</li>
+          <li><strong>Qualitative data organization:</strong> Use software like NVivo, MAXQDA, or even a well-structured spreadsheet to organize transcripts and codes.</li>
+          <li><strong>Data storage:</strong> Follow the 3-2-1 backup rule. Three copies, on two different media, with one copy stored off-site or in the cloud.</li>
+          <li><strong>Codebook:</strong> Create a document explaining every variable name, value label, and coding decision. Six months later, you will not remember what "var_23_b" meant.</li>
+        </ul>
+
+        <h2 class="sec-h">Common Mistakes and How to Avoid Them</h2>
+
+                  <table class="funnel-table">
+                    <thead>
+                        <tr>
+                            <th>Mistake</th>
+                            <th>Why It Happens</th>
+                            <th>Prevention</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Leading questions</strong></td>
+                            <td>The researcher unknowingly signals the desired answer</td>
+                            <td>Pilot-test your instrument. Have someone outside your field review it for bias</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Insufficient sample</strong></td>
+                            <td>Overestimating response rates or underestimating dropout</td>
+                            <td>Plan for 30% attrition. Recruit more participants than you think you need</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Poor record-keeping</strong></td>
+                            <td>Assuming "I will remember this detail" or "the file name is obvious."</td>
+                            <td>Document everything immediately. Memory fails within hours</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mismatched method and question</strong></td>
+                            <td>Choosing a familiar method rather than the right one</td>
+                            <td>Return to Step 1. Justify every methodological choice explicitly</td>
+                        </tr>   
+                        <tr>
+                            <td><strong>Ignoring pilot feedback</strong></td>
+                            <td>Attachment to your original design blinds you to its flaws</td>
+                            <td>Treat pilot feedback as free consulting. If two testers report the same confusion fix it.</td>
+                        </tr>                                             
+                    </tbody>
+                </table>
+
+        <h2 class="sec-h">Moving from Data Collection to Analysis</h2>
+        <div class="prose">
+          <p>When data collection ends, analysis begins. Your next step is to organize, code, and interpret. The YRA Mentorship Program walks you through the entire pipeline, from your first research question to data collection to the final Research Proposal.</p>
+        </div>
+
+        <div class="note" style="margin-top:36px;">Data collection is a systematic process, not an improvisation. Align your method with your question, prepare meticulously, document relentlessly, and treat every participant with respect. The quality of your data determines the credibility of everything you conclude.</div>
+      </div><!-- /data -->
+
+      <!-- ▸▸ WRITE IT UP ◂◂ -->
+      <div class="sp" id="sp-write">
+        <div class="ph">
+          <div class="ph-k">Step 05</div>
+          <h1 class="ph-t">Write It Up: From Draft to Final Manuscript</h1>
+          <p class="ph-s">You have collected your data. You have analyzed your results. Now comes the final step: writing. For many early-career researchers, this stage feels overwhelming. The blank page intimidates. But academic writing is not a mysterious talent — it is a structured process that can be learned, practiced, and mastered.</p>
+        </div>
+
+        <div class="itabs">
+          <button class="it active" onclick="sit(this,'it-before')">Before You Write</button>
+          <button class="it" onclick="sit(this,'it-imrad')">IMRaD Structure</button>
+          <button class="it" onclick="sit(this,'it-intro')">Introduction</button>
+          <button class="it" onclick="sit(this,'it-methods')">Methods</button>
+          <button class="it" onclick="sit(this,'it-results')">Results</button>
+          <button class="it" onclick="sit(this,'it-disc')">Discussion</button>
+          <button class="it" onclick="sit(this,'it-abstract')">Abstract & Title</button>
+          <button class="it" onclick="sit(this,'it-revise')">Revising</button>
+        </div>
+
+        <!-- Before -->
+        <div class="itp active" id="it-before">
+          <h2 class="sec-h" style="margin-top:0;">Before You Write a Single Word</h2>
+          <div class="prose">
+            <p>Clarify your core message first. If someone asked you what your study found and why it matters, and you had only thirty seconds to answer, what would you say? Write that answer down in two or three plain sentences. Tape it to your monitor. Every section of the paper should serve this core message. If a paragraph does not connect back to it, cut it or revise it until it does.</p>
+            <p>Select your target journal early. Different journals have different audiences, length limits, and formatting requirements. Choosing a journal before you start writing saves hours of reformatting later. Read three recent articles from your target journal. Notice the tone, the typical structure, the way authors frame their contribution. Your paper should feel like it belongs in that conversation.</p>
+            <p>Create a reverse outline of a model paper. Take one of those published articles and extract its skeleton: one sentence summarizing what each paragraph does. This skeleton becomes your template. You now know exactly what to write in each section.</p>
+          </div>
+        </div>
+
+        <!-- IMRaD -->
+        <div class="itp" id="it-imrad">
+          <h2 class="sec-h" style="margin-top:0;">The Standard Structure: IMRaD</h2>
+          <div class="prose">
+            <p>Most research papers follow the IMRaD structure: Introduction, Methods, Results, and Discussion. Each section answers a specific reader question.</p>
+          </div>
+          <div class="cards" style="margin-top:24px;">
+            <div class="card"><div class="card-ic">I</div><h3 class="card-t">Introduction</h3><p class="card-b">Why was this study done? Establishes territory, identifies the gap, and occupies it with your research question.</p></div>
+            <div class="card"><div class="card-ic">M</div><h3 class="card-t">Methods</h3><p class="card-b">How was it done? The blueprint of your study — replicable and precise.</p></div>
+            <div class="card"><div class="card-ic">R</div><h3 class="card-t">Results</h3><p class="card-b">What was found? Findings presented without interpretation. Data speaks first.</p></div>
+            <div class="card"><div class="card-ic">D</div><h3 class="card-t">Discussion</h3><p class="card-b">What does it mean? Interpretation, implications, limitations, and future directions.</p></div>
+          </div>
+        </div>
+
+        <!-- Introduction -->
+        <div class="itp" id="it-intro">
+          <h2 class="sec-h" style="margin-top:0;">Writing the Introduction</h2>
+          <div class="prose">
+            <p>A strong introduction follows a funnel structure: start broad, narrow progressively, end with your specific question.</p>
+          </div>
+          <div class="steps" style="margin-top:20px;">
+            <div class="step">
+              <span class="step-n">01</span>
+              <div>
+                <h3 class="step-t">Move 1: Establish the territory</h3>
+                <p class="step-d">Briefly describe the broader research area and its significance. Show the reader why this general field matters.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="step-n">02</span>
+              <div>
+                <h3 class="step-t">Move 2: Identify the gap</h3>
+                <p class="step-d">Point to what is missing in the existing literature. Use precise language: "However, limited research has examined..." or "Previous studies have not addressed whether..."</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="step-n">03</span>
+              <div>
+                <h3 class="step-t">Move 3: Occupy the gap</h3>
+                <p class="step-d">State your research question or hypothesis explicitly. "The present study aims to..." or "We hypothesize that..." This is your paper's anchor — everything else refers back to it.</p>
+              </div>
+            </div>
+          </div>
+          <div class="note"><strong>Common mistake:</strong> Introductions that read like a literature review, summarizing everything known about the topic without ever identifying a gap or stating a clear question. Avoid this by ensuring your final paragraph contains an unambiguous research aim.</div>
+        </div>
+
+        <!-- Methods -->
+        <div class="itp" id="it-methods">
+          <h2 class="sec-h" style="margin-top:0;">Writing the Methods Section</h2>
+          <div class="prose">
+            <p>The Methods section is the blueprint of your study. Another researcher should be able to replicate your work based on what you write here.</p>
+          </div>
+          <h3 class="sec-h2">Subsections to include:</h3>
+          <ul class="dot-list" style="margin-bottom:24px;">
+            <li><strong>Participants or Sample:</strong> Who, how many, how recruited, key demographics, inclusion and exclusion criteria.</li>
+            <li><strong>Materials or Instruments:</strong> Surveys, equipment, software, stimuli. Cite validated scales. Report reliability coefficients for your sample if applicable.</li>
+            <li><strong>Procedure:</strong> Step by step, in chronological order. What did participants experience, from first contact to debriefing?</li>
+            <li><strong>Data Analysis Plan:</strong> What statistical tests or qualitative approach did you use? Specify software and version.</li>
+          </ul>
+          <div class="note"><strong>Writing tip:</strong> Use past tense throughout. Use subheadings liberally — they make the section scannable. Be precise, not poetic. "Participants completed the 21-item Depression Anxiety Stress Scale" is better than "Participants answered some questions about how they felt."</div>
+        </div>
+
+        <!-- Results -->
+        <div class="itp" id="it-results">
+          <h2 class="sec-h" style="margin-top:0;">Writing the Results Section</h2>
+          <div class="prose">
+            <p>The Results section presents findings without interpretation. Save the meaning for the Discussion.</p>
+          </div>
+          <h3 class="sec-h2">Guiding principles:</h3>
+          <ul class="dot-list" style="margin-bottom:24px;">
+            <li><strong>Report findings objectively.</strong> "The intervention group scored significantly higher than the control group on the post-test" is a result. "The intervention was successful" is an interpretation — it belongs in the Discussion.</li>
+            <li><strong>Match the order of your research questions.</strong> If you had three hypotheses, report the results for Hypothesis 1, then Hypothesis 2, then Hypothesis 3.</li>
+            <li><strong>Integrate tables and figures effectively.</strong> Every table and figure must be mentioned in the text. The text should highlight key patterns, not repeat every number the table contains.</li>
+            <li><strong>Report statistics correctly.</strong> Include test statistics, degrees of freedom, p-values, and effect sizes where appropriate. Follow the conventions of your field.</li>
+          </ul>
+          <div class="note"><strong>Common mistake:</strong> Interpreting results in the Results section. Resist the temptation. Let the data speak first. Your voice comes in the Discussion.</div>
+        </div>
+
+        <!-- Discussion -->
+        <div class="itp" id="it-disc">
+          <h2 class="sec-h" style="margin-top:0;">Writing the Discussion</h2>
+          <div class="prose"><p>The Discussion is where you answer the question: "So what?"</p></div>
+          <h3 class="sec-h2">Structure recommendations:</h3>
+          <ol class="num-list" style="margin-bottom:24px;">
+            <li>Begin with a concise summary of main findings. One paragraph, no statistics repeated in detail.</li>
+            <li>Interpret each key finding. Explain what the results mean. Connect them back to the literature reviewed in your introduction. Do they support, extend, or contradict prior work?</li>
+            <li>Address limitations honestly. Every study has limitations. Acknowledging them strengthens your credibility. Focus on limitations that genuinely affect the interpretation of your findings.</li>
+            <li>State implications. What are the practical or theoretical consequences of your findings? Who should care, and why?</li>
+            <li>Suggest future research. What question does your study open that the next researcher could answer? Be specific — "Further research is needed" is too vague to be useful.</li>
+          </ol>
+        </div>
+
+        <!-- Abstract -->
+        <div class="itp" id="it-abstract">
+          <h2 class="sec-h" style="margin-top:0;">Writing the Abstract and Title</h2>
+          <div class="prose">
+            <p><em>Write these last, even though they appear first.</em></p>
+            <p>The abstract should be a self-contained summary covering: background and aim, methods, key results, and main conclusion. Aim for the word limit exactly. Omit references, abbreviations, and details not found in the main text.</p>
+            <p>The title should be informative, specific, and searchable. Include key variables and the study design if space permits. Avoid questions unless the journal specifically encourages them. "The Relationship Between Social Media Use and Academic Performance Among High School Students: A Correlational Study" is more informative than "Social Media and School."</p>
+          </div>
+        </div>
+
+        <!-- Revising -->
+        <div class="itp" id="it-revise">
+          <h2 class="sec-h" style="margin-top:0;">Revising and Polishing</h2>
+          <div class="prose"><p>First drafts are never final drafts. Revision is where good writing happens.</p></div>
+          <h3 class="sec-h2">Self-editing checklist:</h3>
+          <ul class="dot-list" style="margin-bottom:24px;">
+            <li>Does the introduction end with a clear research question?</li>
+            <li>Does each paragraph convey one main idea?</li>
+            <li>Are all abbreviations defined on first use?</li>
+            <li>Are all citations in the text present in the reference list, and vice versa?</li>
+            <li>Does the discussion correspond to the results, not overclaiming or underclaiming?</li>
+            <li>Have you read the paper aloud to catch awkward phrasing?</li>
+          </ul>
+          <div class="prose">
+            <p>Get external feedback. Share your draft with a peer, mentor, or writing group. Ask them to mark any sentence they had to read twice. Those sentences need revision.</p>
+          </div>
+
+          <div class="sdiv"><div class="sdiv-l"></div><span class="sdiv-t">Common Writing Pitfalls and Fixes</span><div class="sdiv-l"></div></div>
+
+                <table class="funnel-table">
+                    <thead>
+                        <tr>
+                            <th>Pitfall</th>
+                            <th>Fix</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Overusing passive voice</strong></td>
+                            <td>Use active voice where possible. "We recruited 120 participants" is clearer than "Participants were recruited."</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Hedging excessively</strong></td>
+                            <td>Qualify claims appropriately, but do not undermine your own findings. "The results suggest" is fine. "The results might possibly suggest, tentatively" is not</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Inconsistent terminology</strong></td>
+                            <td>Use the same term for the same concept throughout. Do not call a variable "well-being" in one section and "life satisfaction" in another unless you define them as distinct</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ingnoring word limits</strong></td>
+                            <td>Editors enforce limits. Cutting 10% of your draft is usually possible without losing meaning. Tighten sentences, remove redundancy, and trim overly long introductions</td>
+                        </tr>                        
+                    </tbody>
+                </table>
+
+
+          <div class="note">Academic writing is a craft, not a talent. Follow the IMRaD structure, clarify your core message before drafting, write with the reader's questions in mind, and revise relentlessly. A clear paper reflects clear thinking. The YRA Mentorship Program supports you through this final stage, ensuring your Research Proposal is polished, coherent, and ready for submission.</div>
+        </div>
+
+      </div><!-- /write -->
+
+    </div><!-- /hub-main -->
+  </div><!-- /hub -->
+
+  <footer>
+    <div class="footer"><div class="footer-top"><div><div class="f-brand">YRA</div><div class="f-tag">Youth Research Accelerator — For the Next Generation of Researchers.</div></div><nav class="f-nav"><button><a href="https://donskovaadelina-oss.github.io/portfolio/" target="_blank">Creator of Website</a></button><button onclick="go('home')">Home</button><button onclick="go('about')">About</button><button onclick="go('hub')">Research Hub</button><button onclick="go('events')">Events</button><button onclick="go('mentorship')">Mentorship</button></nav></div><div class="footer-bot"><span>© 2026 Youth Research Accelerator. All rights reserved.</span><span>Built for researchers who mean it.</span></div></div>
+  </footer>
+</section><!-- /hub page -->
+
+<!-- ╔══════════════════════════════════════════╗
+     ║  EVENTS                                  ║
+     ╚══════════════════════════════════════════╝ -->
+<section class="page" id="page-events">
+  <div class="std">
+    <div class="ph">
+      <div class="ph-k">Events</div>
+      <h1 class="ph-t">Events</h1>
+      <p class="ph-s">YRA runs events designed to give early-career researchers practical experience, constructive feedback, and something tangible to show at the end. Webinars explain the process, competitions push you to produce work, both are open to anyone ready to try.</p>
+    </div>
+
+    <!-- Event 1 -->
+    <div class="ev-item">
+      <div class="ev-tag">Webinar</div>
+      <h2 class="ev-title">Research Without Fear — Writing &amp; Publishing Explained</h2>
+      <p class="ev-desc">A practical introduction to the research and publication process. Covered how to choose a viable topic, what academic writing actually requires, the main categories of research, how to begin a project, how to contact a professor, and which resources support each stage.</p>
+      <p class="ev-desc"><strong>Presenter:</strong> Mels Diyarov, Grade 11, RFMSH. Conducted research on copy dissemination. Works with a charitable organization supporting children with special needs. Currently developing a research project with a university dean.</p>
+      <div class="ev-meta">
+        <span>People participated: <strong>20</strong></span>
+      </div>
+      <a class="ev-link" href="https://drive.google.com/file/d/1bVQnYyI2KVtNFw-sK5qd_XEtzYI5WcQz/view?usp=drivesdk" target="_blank">↗ View Poster</a>
+    </div>
+
+    <!-- Event 2 -->
+    <div class="ev-item">
+      <div class="ev-tag">Webinar</div>
+      <h2 class="ev-title">From Idea to Publication — How Research Is Made</h2>
+      <p class="ev-desc">A walk through the full research cycle: finding a relevant topic, formulating a hypothesis, searching for and analyzing scientific sources, choosing methodology, collecting data, and interpreting results. Designed for those who understand the basics and want to see how the pieces fit together.</p>
+      <p class="ev-desc"><strong>Presenter:</strong> Adelina, 15, Krasnodar. Published in the Journal of Emerging Investigators and a KubSU university journal. Worked directly with a professor. Currently preparing a second article.</p>
+      <div class="ev-meta">
+        <span>People participated: <strong>40</strong></span>
+      </div>
+      <a class="ev-link" href="https://drive.google.com/file/d/1udyd1JYnmdS2boC_Vhwh2wU83yoWMeCR/view?usp=drivesdk" target="_blank">↗ View Poster</a>
+    </div>
+
+    <!-- Event 3 -->
+    <div class="ev-item">
+      <div class="ev-tag">Competition</div>
+      <h2 class="ev-title">Scholars in Progress: Essay Contest</h2>
+      <p class="ev-desc">A collaboration between YRA and Eloquent English. Participants chose from five topics, wrote a 700-word essay within ten days, and submitted through an open call. Three winners received certificates, letters of recommendation, and a writing guide.</p>
+      <div class="ev-meta">
+        <span>People participated: <strong>56</strong></span>
+        <span>Winners: <strong>3</strong></span>
+      </div>
+      <a class="ev-link" href="https://drive.google.com/file/d/11l-uebypJuWOmgHI3meQY4DqNsJ9oVmS/view?usp=drivesdk" target="_blank">↗ View Poster</a>
+    </div>
+
+    <!-- Event 4 -->
+    <div class="ev-item">
+      <div class="ev-tag">Competition</div>
+      <h2 class="ev-title">Abstract Challenge</h2>
+      <p class="ev-desc">Participants selected one of three topics and wrote an abstract of 150–250 words. Topics focused on contemporary questions about attention, reading, and automation. Certificates were awarded to all participants; place winners received additional recognition.</p>
+      <div class="ev-meta">
+        <span>People participated: <strong>20</strong></span>
+        <span>Winners: <strong>3</strong></span>
+      </div>
+      <a class="ev-link" href="https://drive.google.com/file/d/1xdqCJqiFZkAfljF-odHXiExf9a83JvOt/view?usp=drivesdk" target="_blank">↗ View Poster</a>
+    </div>
+
+    <div class="hbox" style="margin-top:44px;">
+      <h3>Stay Updated</h3>
+      <p>New events are announced on the YRA Telegram channel and website. Some events have limited capacity and fill on a first-come, first-served basis.</p>
+      <p style="margin-top:12px;"><a class="lnk" href="https://t.me/yrawrite" target="_blank">→ Join the Telegram channel</a></p>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer"><div class="footer-top"><div><div class="f-brand">YRA</div><div class="f-tag">Youth Research Accelerator — For the Next Generation of Researchers.</div></div><nav class="f-nav"><button><a href="https://donskovaadelina-oss.github.io/portfolio/" target="_blank">Creator of Website</a></button><button onclick="go('home')">Home</button><button onclick="go('about')">About</button><button onclick="go('hub')">Research Hub</button><button onclick="go('events')">Events</button><button onclick="go('mentorship')">Mentorship</button></nav></div><div class="footer-bot"><span>© 2026 Youth Research Accelerator. All rights reserved.</span><span>Built for researchers who mean it.</span></div></div>
+  </footer>
+</section>
+
+<!-- ╔══════════════════════════════════════════╗
+     ║  MENTORSHIP                              ║
+     ╚══════════════════════════════════════════╝ -->
+<section class="page" id="page-mentorship">
+  <div class="std">
+    <div class="ph">
+      <div class="ph-k">Mentorship</div>
+      <h1 class="ph-t">The YRA Mentorship Program</h1>
+      <p class="ph-s">The YRA Mentorship Program is where your idea becomes a finished Research Proposal — in four weeks, with a mentor who gives real feedback, in a group small enough that no one hides in the back row.</p>
+    </div>
+
+    <h2 class="sec-h">Why we built this</h2>
+    <div class="prose">
+      <p>Guides and webinars help. But at some point, you need a person. Someone who reads your draft, points to a specific paragraph, and says, "This part is unclear," or "You have something here, but you need to narrow it." Most early-career researchers do not have that person. The mentorship program exists to be that person.</p>
+    </div>
+
+    <h2 class="sec-h">How it works</h2>
+    <div class="prose">
+      <p>You join a group of five. Your mentor is an experienced researcher — someone who has published, peer-reviewed, or presented their work publicly. They have been where you are recently enough to remember what the hard parts feel like.</p>
+    </div>
+
+    <div class="pq"><p>"The program runs four weeks."</p></div>
+
+    <div class="two" style="margin-bottom:36px;">
+      <div class="card" style="border-radius:10px; padding:28px;">
+        <h3 class="card-t" style="margin-bottom:12px;">Weeks 1 &amp; 2 — Foundation</h3>
+        <p class="card-b">You learn how to spot a gap in the literature, how to turn a broad interest into a precise research question, and how to write a literature review that argues something, not just lists sources. Your mentor teaches through examples, templates, and direct feedback on your drafts.</p>
+      </div>
+      <div class="card" style="border-radius:10px; padding:28px;">
+        <h3 class="card-t" style="margin-bottom:12px;">Weeks 3 &amp; 4 — Writing &amp; Revision</h3>
+        <p class="card-b">You draft each section of your proposal: introduction, literature review, methodology, expected outcomes. Your mentor reviews every section. You revise. You repeat. At the end, you defend your proposal — a short presentation, a short Q&amp;A — and you leave with a finished document.</p>
+      </div>
+    </div>
+
+    <h2 class="sec-h">What you walk away with</h2>
+    <ul class="dot-list" style="margin-bottom:36px;">
+      <li>A completed Research Proposal, ready for submission to a supervisor, conference, or journal.</li>
+      <li>The skills to read, assess, and synthesize scientific literature critically.</li>
+      <li>A YRA Certificate of Completion that documents your training and output.</li>
+      <li>Membership in the YRA alumni community.</li>
+    </ul>
+
+    <h2 class="sec-h">What makes this different</h2>
+    <div class="prose">
+      <p>Groups are small on purpose — five people, no more. Your mentor reads your work, not a summary of it. The program is product-based — you do not just learn about research, but you produce it. And our mentors are early-career researchers themselves. They understand the beginner mindset because they were recently in it.</p>
+    </div>
+
+    <div class="hbox" style="margin-top:44px;">
+      <h3>Join the next cohort</h3>
+      <p>Applications are open on a rolling basis. Cohorts are small and fill quickly.</p>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer"><div class="footer-top"><div><div class="f-brand">YRA</div><div class="f-tag">Youth Research Accelerator — For the Next Generation of Researchers.</div></div><nav class="f-nav"><button><a href="https://donskovaadelina-oss.github.io/portfolio/" target="_blank">Creator of Website</a></button><button onclick="go('home')">Home</button><button onclick="go('about')">About</button><button onclick="go('hub')">Research Hub</button><button onclick="go('events')">Events</button><button onclick="go('mentorship')">Mentorship</button></nav></div><div class="footer-bot"><span>© 2026 Youth Research Accelerator. All rights reserved.</span><span>Built for researchers who mean it.</span></div></div>
+  </footer>
+</section>
+
+<!-- ╔══════════════════════════════════════════╗
+     ║  JAVASCRIPT                              ║
+     ╚══════════════════════════════════════════╝ -->
+<script>
+const PAGES = ['home','about','hub','events','mentorship'];
+const HUB   = ['basics','topic','lit','data','write'];
+
+function go(key) {
+  PAGES.forEach(k => {
+    document.getElementById('page-'+k).classList.toggle('active', k===key);
+    const nb = document.getElementById('nb-'+k);
+    if (nb) nb.classList.toggle('active', k===key);
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function goHub(sub) {
+  go('hub');
+  HUB.forEach(s => {
+    document.getElementById('sp-'+s).classList.toggle('active', s===sub);
+    document.getElementById('sb-'+s).classList.toggle('active', s===sub);
+  });
+  const hm = document.getElementById('hub-main');
+  if (hm) hm.scrollTop = 0;
+}
+
+/* inner tabs (Write it Up) */
+function sit(btn, panelId) {
+  const scope = btn.closest('.sp') || document;
+  scope.querySelectorAll('.it').forEach(b  => b.classList.remove('active'));
+  scope.querySelectorAll('.itp').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+/* navbar shadow on scroll */
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('s', window.scrollY > 20);
+});
+
+/* ── MOBILE MENU ── */
+const MOB_PAGES = ['home','about','hub','events','mentorship'];
+
+function toggleMobMenu() {
+  const isOpen = document.getElementById('mob-menu').classList.contains('open');
+  if (isOpen) { closeMobMenu(); } else { openMobMenu(); }
+}
+
+function openMobMenu() {
+  document.getElementById('mob-menu').classList.add('open');
+  document.getElementById('burger').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMobMenu() {
+  document.getElementById('mob-menu').classList.remove('open');
+  document.getElementById('burger').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function mobGo(key) {
+  /* 1. Close menu first — removes overflow:hidden before page switch */
+  closeMobMenu();
+  /* 2. Switch page directly (bypass go() to avoid smooth-scroll flash) */
+  PAGES.forEach(k => {
+    document.getElementById('page-'+k).classList.toggle('active', k===key);
+    const nb = document.getElementById('nb-'+k);
+    if (nb) nb.classList.toggle('active', k===key);
+  });
+  /* 3. Update mobile nav highlight */
+  MOB_PAGES.forEach(k => {
+    const btn = document.getElementById('mnb-'+k);
+    if (btn) btn.classList.toggle('active', k===key);
+  });
+  /* 4. Instant scroll to top */
+  window.scrollTo({top:0, behavior:'instant'});
+}
+
+function mobGoHub(sub) {
+  /* 1. Close menu first */
+  closeMobMenu();
+  /* 2. Switch to hub page */
+  PAGES.forEach(k => {
+    document.getElementById('page-'+k).classList.toggle('active', k==='hub');
+    const nb = document.getElementById('nb-'+k);
+    if (nb) nb.classList.toggle('active', k==='hub');
+  });
+  /* 3. Switch sub-page inside hub */
+  HUB.forEach(s => {
+    document.getElementById('sp-'+s).classList.toggle('active', s===sub);
+    document.getElementById('sb-'+s).classList.toggle('active', s===sub);
+  });
+  const hm = document.getElementById('hub-main');
+  if (hm) hm.scrollTop = 0;
+  /* 4. Update mobile nav highlight */
+  MOB_PAGES.forEach(k => {
+    const btn = document.getElementById('mnb-'+k);
+    if (btn) btn.classList.toggle('active', k==='hub');
+  });
+  window.scrollTo({top:0, behavior:'instant'});
+}
+
+/* close mobile menu on resize to desktop */
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 680) closeMobMenu();
+});
+
+</script>
+</body>
+</html>
